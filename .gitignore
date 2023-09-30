@@ -45,14 +45,10 @@ mvnw.cmd
 # IntelliJ IDEA
 .idea/
 
-# Visual Studio Code
-.vscode/
-
 # Logs
 *.log
 
 # OS-specific files
-.DS_Store
 Thumbs.db
 
 # Temporary files
@@ -72,9 +68,27 @@ Thumbs.db
 application.properties
 application.yml
 
-# IDE-specific project files
-/.project
-/.classpath
-
 # Spring Boot DevTools
 .restart
+
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+!**/src/main/**/build/
+!**/src/test/**/build/
