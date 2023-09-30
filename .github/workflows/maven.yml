@@ -11,8 +11,6 @@ name: Project CI Flow
 on:
   push:
     branches: [ "main" ]
-    branches-ignore:
-      - 'dependabot/**'
   pull_request:
     branches: [ "main" ]
 
