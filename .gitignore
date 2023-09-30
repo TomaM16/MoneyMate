@@ -1,24 +1,80 @@
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
 # BlueJ files
 *.ctxt
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+replay_pid*
+
+# Spring Boot
+/target/
+/build/
+/bin/
+/logs/
+/.classpath
+/.project
+/.settings/
+.springBeans
+
+# IDE-specific files
+/.idea/
+*.iml
+*.ipr
+*.iws
+/.metadata/
+.vscode/
+*.code-workspace
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Eclipse
+.settings/
+
+# macOS
+.DS_Store
+
+# IntelliJ IDEA
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.swp
+
+# Compiled binary files
+*.class
 *.jar
 *.war
-*.nar
 *.ear
+*.nar
 *.zip
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# Application properties
+application.properties
+application.yml
+
+# IDE-specific project files
+/.project
+/.classpath
+
+# Spring Boot DevTools
+.restart

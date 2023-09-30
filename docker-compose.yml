@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  db-moneymate-dev:
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_USER=moneymate
+      - POSTGRES_PASSWORD=moneymate501987
+      - POSTGRES_DB=moneymate-dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/moneymate-data
+
+  pg-admin:
+    image: dpage/pgadmin4:6
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@moneymate.com
+      - PGADMIN_DEFAULT_PASSWORD=admin501987
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - "5050:5050"
+
+volumes:
+  data:
