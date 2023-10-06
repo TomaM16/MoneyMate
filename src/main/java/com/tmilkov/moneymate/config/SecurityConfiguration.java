@@ -24,8 +24,12 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/js/**").permitAll()
+                        .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/transactions/**").permitAll()
+                        .requestMatchers("/api/v1/transactions/**").permitAll() // TODO: Remove when authentication is added
+                        .requestMatchers("/transactions/**").permitAll() // TODO: Remove when authentication is added
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

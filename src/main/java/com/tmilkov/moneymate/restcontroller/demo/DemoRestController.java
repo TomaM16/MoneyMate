@@ -1,4 +1,4 @@
-package com.tmilkov.moneymate.controller.demo;
+package com.tmilkov.moneymate.restcontroller.demo;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/demo-controller")
-public class DemoController {
+public class DemoRestController {
 
     @GetMapping
     public ResponseEntity<String> sayHello() {
