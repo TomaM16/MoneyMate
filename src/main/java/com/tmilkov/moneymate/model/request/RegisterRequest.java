@@ -1,4 +1,4 @@
-package com.tmilkov.moneymate.controller.auth;
+package com.tmilkov.moneymate.model.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

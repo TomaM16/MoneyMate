@@ -1,6 +1,6 @@
 package com.tmilkov.moneymate.repository.user;
 
-import com.tmilkov.moneymate.model.user.User;
+import com.tmilkov.moneymate.model.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
