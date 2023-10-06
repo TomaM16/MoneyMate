@@ -1,10 +1,10 @@
-package com.tmilkov.moneymate.service;
+package com.tmilkov.moneymate.service.authentication;
 
-import com.tmilkov.moneymate.controller.auth.AuthenticationRequest;
-import com.tmilkov.moneymate.controller.auth.AuthenticationResponse;
-import com.tmilkov.moneymate.controller.auth.RegisterRequest;
-import com.tmilkov.moneymate.model.user.Role;
-import com.tmilkov.moneymate.model.user.User;
+import com.tmilkov.moneymate.model.request.AuthenticationRequest;
+import com.tmilkov.moneymate.model.response.AuthenticationResponse;
+import com.tmilkov.moneymate.model.request.RegisterRequest;
+import com.tmilkov.moneymate.model.entity.user.Role;
+import com.tmilkov.moneymate.model.entity.user.User;
 import com.tmilkov.moneymate.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

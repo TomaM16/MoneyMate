@@ -1,6 +1,6 @@
 package com.tmilkov.moneymate.config;
 
-import com.tmilkov.moneymate.service.JwtService;
+import com.tmilkov.moneymate.service.authentication.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

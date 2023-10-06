@@ -1,4 +1,4 @@
-package com.tmilkov.moneymate.service;
+package com.tmilkov.moneymate.service.authentication;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

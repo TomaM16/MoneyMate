@@ -1,4 +1,4 @@
-package com.tmilkov.moneymate.controller.auth;
+package com.tmilkov.moneymate.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
+public class AuthenticationResponse {
 
-    private String email;
-    private String password;
+    private String token;
 }

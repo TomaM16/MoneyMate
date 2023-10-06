@@ -1,6 +1,9 @@
 package com.tmilkov.moneymate.controller.auth;
 
-import com.tmilkov.moneymate.service.AuthenticationService;
+import com.tmilkov.moneymate.model.request.AuthenticationRequest;
+import com.tmilkov.moneymate.model.request.RegisterRequest;
+import com.tmilkov.moneymate.model.response.AuthenticationResponse;
+import com.tmilkov.moneymate.service.authentication.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
