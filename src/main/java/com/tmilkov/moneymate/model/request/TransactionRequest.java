@@ -27,4 +27,7 @@ public class TransactionRequest {
     @NotNull(message = "Amount is required")
     private BigDecimal amount;
 
+    @NotNull(message = "Category is required")
+    private Long categoryId;
+
 }

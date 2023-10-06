@@ -20,12 +20,13 @@ public class Transaction {
     @GeneratedValue
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
-
     private Date date;
     private String description;
     private BigDecimal amount;
+    private TransactionType type;
 
+    @ManyToOne
+    @JoinColumn(name = "transaction_category_id")
+    private TransactionCategory category;
 }
+
