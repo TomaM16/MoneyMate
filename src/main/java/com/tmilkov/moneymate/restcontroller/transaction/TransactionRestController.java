@@ -1,4 +1,4 @@
-package com.tmilkov.moneymate.controller.transaction;
+package com.tmilkov.moneymate.restcontroller.transaction;
 
 import com.tmilkov.moneymate.model.request.TransactionCategoryRequest;
 import com.tmilkov.moneymate.model.request.TransactionRequest;
@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/transactions")
 @RequiredArgsConstructor
-public class TransactionController {
+public class TransactionRestController {
 
     private final TransactionsService service;
 

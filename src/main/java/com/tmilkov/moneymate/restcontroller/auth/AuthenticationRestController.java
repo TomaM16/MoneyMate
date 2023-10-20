@@ -1,4 +1,4 @@
-package com.tmilkov.moneymate.controller.auth;
+package com.tmilkov.moneymate.restcontroller.auth;
 
 import com.tmilkov.moneymate.model.request.AuthenticationRequest;
 import com.tmilkov.moneymate.model.request.RegisterRequest;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class AuthenticationController {
+public class AuthenticationRestController {
 
     private final AuthenticationService service;
 

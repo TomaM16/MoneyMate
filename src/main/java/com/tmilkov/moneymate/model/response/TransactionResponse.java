@@ -1,6 +1,7 @@
 package com.tmilkov.moneymate.model.response;
 
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
+import com.tmilkov.moneymate.model.entity.transaction.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class TransactionResponse {
     private final Date date;
     private final String description;
     private final BigDecimal amount;
+    private final TransactionType type;
     private final TransactionCategory category;
 }
