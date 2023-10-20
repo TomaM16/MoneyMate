@@ -25,6 +25,7 @@ public class TransactionsService {
         return transactionCategoryRepository.findAll()
                 .stream()
                 .map(transactionCategory -> new TransactionCategoryResponse(
+                        transactionCategory.getId(),
                         transactionCategory.getName(),
                         transactionCategory.getDescription()
                 ))
@@ -38,6 +39,7 @@ public class TransactionsService {
                         transaction.getDate(),
                         transaction.getDescription(),
                         transaction.getAmount(),
+                        transaction.getType(),
                         transaction.getCategory()
                 ))
                 .toList();
@@ -50,6 +52,7 @@ public class TransactionsService {
                 transaction.getDate(),
                 transaction.getDescription(),
                 transaction.getAmount(),
+                transaction.getType(),
                 transaction.getCategory()
         );
     }
@@ -72,6 +75,7 @@ public class TransactionsService {
                 transaction.getDate(),
                 transaction.getDescription(),
                 transaction.getAmount(),
+                transaction.getType(),
                 transaction.getCategory()
         );
     }
@@ -90,6 +94,7 @@ public class TransactionsService {
         );
 
         return new TransactionCategoryResponse(
+                transactionCategory.getId(),
                 transactionCategory.getName(),
                 transactionCategory.getDescription()
         );
