@@ -1,5 +1,7 @@
 package com.tmilkov.moneymate.service.transaction;
 
+import com.tmilkov.moneymate.mapper.TransactionCategoryMapper;
+import com.tmilkov.moneymate.mapper.TransactionMapper;
 import com.tmilkov.moneymate.model.entity.transaction.Transaction;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
 import com.tmilkov.moneymate.model.request.TransactionCategoryRequest;
@@ -21,40 +23,26 @@ public class TransactionsService {
     private final TransactionRepository transactionRepository;
     private final TransactionCategoryRepository transactionCategoryRepository;
 
+    private final TransactionMapper transactionMapper;
+    private final TransactionCategoryMapper transactionCategoryMapper;
+
     public List<TransactionCategoryResponse> getAllCategories() {
         return transactionCategoryRepository.findAll()
                 .stream()
-                .map(transactionCategory -> new TransactionCategoryResponse(
-                        transactionCategory.getId(),
-                        transactionCategory.getName(),
-                        transactionCategory.getDescription()
-                ))
+                .map(transactionCategoryMapper::toResponse)
                 .toList();
     }
 
     public List<TransactionResponse> getAllTransactions() {
         return transactionRepository.findAll()
                 .stream()
-                .map(transaction -> new TransactionResponse(
-                        transaction.getDate(),
-                        transaction.getDescription(),
-                        transaction.getAmount(),
-                        transaction.getType(),
-                        transaction.getCategory()
-                ))
+                .map(transactionMapper::toResponse)
                 .toList();
     }
 
     public TransactionResponse getTransaction(Long id) throws NoSuchElementException {
         final var transaction = transactionRepository.findById(id).orElseThrow();
-
-        return new TransactionResponse(
-                transaction.getDate(),
-                transaction.getDescription(),
-                transaction.getAmount(),
-                transaction.getType(),
-                transaction.getCategory()
-        );
+        return transactionMapper.toResponse(transaction);
     }
 
     private TransactionCategory getTransactionCategory(Long id) throws NoSuchElementException {
@@ -62,22 +50,11 @@ public class TransactionsService {
     }
 
     public TransactionResponse addTransaction(TransactionRequest request) throws NoSuchElementException {
-        Transaction newTransaction = Transaction.builder()
-                .date(request.getDate())
-                .description(request.getDescription())
-                .amount(request.getAmount())
-                .category(getTransactionCategory(request.getCategoryId()))
-                .build();
-
+        final TransactionCategory category = getTransactionCategory(request.getCategoryId());
+        final Transaction newTransaction = transactionMapper.toEntity(request, category);
         final Transaction transaction = transactionRepository.save(newTransaction);
 
-        return new TransactionResponse(
-                transaction.getDate(),
-                transaction.getDescription(),
-                transaction.getAmount(),
-                transaction.getType(),
-                transaction.getCategory()
-        );
+        return transactionMapper.toResponse(transaction);
     }
 
     public Void deleteTransaction(Long transactionId) {
@@ -86,17 +63,9 @@ public class TransactionsService {
     }
 
     public TransactionCategoryResponse addCategory(TransactionCategoryRequest request) {
-        final var transactionCategory = transactionCategoryRepository.save(
-                TransactionCategory.builder()
-                        .name(request.getName())
-                        .description(request.getDescription())
-                        .build()
-        );
+        final TransactionCategory category = transactionCategoryMapper.toEntity(request);
+        final var transactionCategory = transactionCategoryRepository.save(category);
 
-        return new TransactionCategoryResponse(
-                transactionCategory.getId(),
-                transactionCategory.getName(),
-                transactionCategory.getDescription()
-        );
+        return transactionCategoryMapper.toResponse(transactionCategory);
     }
 }

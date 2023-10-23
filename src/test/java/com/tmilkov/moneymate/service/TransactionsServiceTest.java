@@ -1,5 +1,7 @@
 package com.tmilkov.moneymate.service;
 
+import com.tmilkov.moneymate.mapper.TransactionCategoryMapper;
+import com.tmilkov.moneymate.mapper.TransactionMapper;
 import com.tmilkov.moneymate.model.entity.transaction.Transaction;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionType;
@@ -20,9 +22,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
@@ -33,6 +35,12 @@ public class TransactionsServiceTest {
     private TransactionCategoryRepository transactionCategoryRepository;
     @Mock
     private TransactionRepository transactionRepository;
+
+    @Mock
+    private TransactionMapper transactionMapper;
+    @Mock
+    private TransactionCategoryMapper transactionCategoryMapper;
+
     @InjectMocks
     private TransactionsService transactionsService;
 
@@ -77,37 +85,74 @@ public class TransactionsServiceTest {
     @Test
     public void testGetAllCategories() {
         // given
+        final var expectedCategoriesResponses = List.of(
+                new TransactionCategoryResponse(1L, "Category1", "Category1 description"),
+                new TransactionCategoryResponse(2L, "Category2", "Category2 description"),
+                new TransactionCategoryResponse(3L, "Category3", "Category3 description")
+        );
+
+        when(transactionCategoryMapper.toResponse(any(TransactionCategory.class)))
+                .thenAnswer(invocation -> {
+                    TransactionCategory inputTransactionCategory = invocation.getArgument(0);
+                    return expectedCategoriesResponses.stream()
+                            .filter(response -> response.getId().equals(inputTransactionCategory.getId()))
+                            .findFirst()
+                            .orElse(null);
+                });
         when(transactionCategoryRepository.findAll()).thenReturn(mockTransactionCategories);
 
         // when
         List<TransactionCategoryResponse> categories = transactionsService.getAllCategories();
 
         // then
-        IntStream.range(0, mockTransactionCategories.size())
-                .forEach(i -> {
-                    assertEquals(mockTransactionCategories.get(i).getId(), categories.get(i).getId());
-                    assertEquals(mockTransactionCategories.get(i).getName(), categories.get(i).getName());
-                    assertEquals(mockTransactionCategories.get(i).getDescription(), categories.get(i).getDescription());
-                });
+        assertEquals(expectedCategoriesResponses, categories);
     }
 
     @Test
     public void testGetAllTransactions() {
         // given
+        final var expectedTransactionResponses = List.of(
+                new TransactionResponse(
+                        1L,
+                        new Date(),
+                        "Transaction1",
+                        new BigDecimal("100.0"),
+                        TransactionType.INCOME,
+                        new TransactionCategory(1L, "Category1", "Category1 description")
+                ),
+                new TransactionResponse(
+                        2L,
+                        new Date(),
+                        "Transaction2",
+                        new BigDecimal("100.0"),
+                        TransactionType.INCOME,
+                        new TransactionCategory(2L, "Category1", "Category1 description")
+                ),
+                new TransactionResponse(
+                        3L,
+                        new Date(),
+                        "Transaction3",
+                        new BigDecimal("100.0"),
+                        TransactionType.INCOME,
+                        new TransactionCategory(3L, "Category1", "Category1 description")
+                )
+        );
+
+        when(transactionMapper.toResponse(any(Transaction.class)))
+                .thenAnswer(invocation -> {
+                    Transaction inputTransaction = invocation.getArgument(0);
+                    return expectedTransactionResponses.stream()
+                            .filter(response -> response.getId().equals(inputTransaction.getId()))
+                            .findFirst()
+                            .orElse(null);
+                });
         when(transactionRepository.findAll()).thenReturn(mockTransactions);
 
         // when
         List<TransactionResponse> transactions = transactionsService.getAllTransactions();
 
         // then
-        IntStream.range(0, mockTransactions.size())
-                .forEach(i -> {
-                    assertEquals(mockTransactions.get(i).getDate(), transactions.get(i).getDate());
-                    assertEquals(mockTransactions.get(i).getDescription(), transactions.get(i).getDescription());
-                    assertEquals(mockTransactions.get(i).getAmount(), transactions.get(i).getAmount());
-                    assertEquals(mockTransactions.get(i).getType(), transactions.get(i).getType());
-                    assertEquals(mockTransactions.get(i).getCategory(), transactions.get(i).getCategory());
-                });
+        assertEquals(expectedTransactionResponses, transactions);
     }
 
     @Test
@@ -117,30 +162,44 @@ public class TransactionsServiceTest {
         final var transaction = mockTransactions.stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst();
-
+        final var expectedTransactionResponse = new TransactionResponse(
+                1L,
+                new Date(),
+                "Transaction1",
+                new BigDecimal("100.0"),
+                TransactionType.INCOME,
+                new TransactionCategory(1L, "Category1", "Category1 description")
+        );
         when(transactionRepository.findById(id)).thenReturn(transaction);
+        when(transactionMapper.toResponse(transaction.orElseThrow())).thenReturn(expectedTransactionResponse);
 
         // when
         TransactionResponse transactionResponse = transactionsService.getTransaction(id);
 
         // then
-        assertEquals(transaction.orElseThrow().getDate(), transactionResponse.getDate());
-        assertEquals(transaction.orElseThrow().getDescription(), transactionResponse.getDescription());
-        assertEquals(transaction.orElseThrow().getAmount(), transactionResponse.getAmount());
-        assertEquals(transaction.orElseThrow().getCategory(), transactionResponse.getCategory());
+        assertEquals(expectedTransactionResponse, transactionResponse);
     }
 
     @Test
     public void testAddTransaction() {
         // given
+        final var category = new TransactionCategory(1L, "Category1", "Category1 description");
         final var request = new TransactionRequest(
                 new Date(),
                 "Transaction1",
                 new BigDecimal("100.0"),
-                1L
+                TransactionType.INCOME,
+                category.getId()
         );
-
-        final Transaction newTransaction = Transaction.builder()
+        final var expectedTransactionResponse = new TransactionResponse(
+                1L,
+                new Date(),
+                "Transaction1",
+                new BigDecimal("100.0"),
+                TransactionType.INCOME,
+                category
+        );
+        final var newTransaction = Transaction.builder()
                 .date(request.getDate())
                 .description(request.getDescription())
                 .amount(request.getAmount())
@@ -152,6 +211,8 @@ public class TransactionsServiceTest {
                 )
                 .build();
 
+        when(transactionMapper.toEntity(request, category)).thenReturn(newTransaction);
+        when(transactionMapper.toResponse(newTransaction)).thenReturn(expectedTransactionResponse);
         when(transactionCategoryRepository.findById(request.getCategoryId())).thenReturn(
                 mockTransactionCategories.stream()
                         .filter(c -> c.getId().equals(request.getCategoryId()))
@@ -163,32 +224,35 @@ public class TransactionsServiceTest {
         final TransactionResponse transactionResponse = transactionsService.addTransaction(request);
 
         // then
-        assertEquals(request.getDate(), transactionResponse.getDate());
-        assertEquals(request.getDescription(), transactionResponse.getDescription());
-        assertEquals(request.getAmount(), transactionResponse.getAmount());
-        assertEquals(request.getCategoryId(), transactionResponse.getCategory().getId());
+        assertEquals(expectedTransactionResponse, transactionResponse);
     }
 
     @Test
     public void testAddCategory() {
         // given
-        final TransactionCategoryRequest request = new TransactionCategoryRequest(
+        final var request = new TransactionCategoryRequest(
                 "Category1",
                 "Category1 description"
         );
-        final TransactionCategory transactionCategory = TransactionCategory.builder()
+        final var expectedTransactionCategoryResponse = new TransactionCategoryResponse(
+                1L,
+                "Category1",
+                "Category1 description"
+        );
+        final var transactionCategory = TransactionCategory.builder()
                 .name(request.getName())
                 .description(request.getDescription())
                 .build();
 
+        when(transactionCategoryMapper.toEntity(request)).thenReturn(transactionCategory);
+        when(transactionCategoryMapper.toResponse(transactionCategory)).thenReturn(expectedTransactionCategoryResponse);
         when(transactionCategoryRepository.save(transactionCategory)).thenReturn(transactionCategory);
 
         // when
         final TransactionCategoryResponse transactionCategoryResponse = transactionsService.addCategory(request);
 
         // then
-        assertEquals(request.getName(), transactionCategoryResponse.getName());
-        assertEquals(request.getDescription(), transactionCategoryResponse.getDescription());
+        assertEquals(expectedTransactionCategoryResponse, transactionCategoryResponse);
     }
 
 }
