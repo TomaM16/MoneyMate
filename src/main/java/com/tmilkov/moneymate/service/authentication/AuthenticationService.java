@@ -1,5 +1,6 @@
 package com.tmilkov.moneymate.service.authentication;
 
+import com.tmilkov.moneymate.mapper.AuthenticationMapper;
 import com.tmilkov.moneymate.model.request.AuthenticationRequest;
 import com.tmilkov.moneymate.model.response.AuthenticationResponse;
 import com.tmilkov.moneymate.model.request.RegisterRequest;
@@ -21,6 +22,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private final AuthenticationMapper authenticationMapper;
+
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
                 .firstname(request.getFirstName())
@@ -33,9 +36,8 @@ public class AuthenticationService {
         userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+
+        return authenticationMapper.toResponse(jwtToken);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -50,8 +52,7 @@ public class AuthenticationService {
                 .orElseThrow();
 
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+
+        return authenticationMapper.toResponse(jwtToken);
     }
 }

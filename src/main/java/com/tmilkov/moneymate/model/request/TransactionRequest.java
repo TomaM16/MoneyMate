@@ -1,5 +1,6 @@
 package com.tmilkov.moneymate.model.request;
 
+import com.tmilkov.moneymate.model.entity.transaction.TransactionType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,9 @@ public class TransactionRequest {
 
     @NotNull(message = "Amount is required")
     private BigDecimal amount;
+
+    @NotNull(message = "Type is required")
+    private TransactionType type;
 
     @NotNull(message = "Category is required")
     private Long categoryId;
