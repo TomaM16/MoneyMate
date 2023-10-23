@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class TransactionMapper {
     public TransactionResponse toResponse(Transaction transaction) {
         return new TransactionResponse(
+                transaction.getId(),
                 transaction.getDate(),
                 transaction.getDescription(),
                 transaction.getAmount(),
