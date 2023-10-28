@@ -28,8 +28,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/js/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/transactions/**").permitAll() // TODO: Remove when authentication is added
-                        .requestMatchers("/transactions/**").permitAll() // TODO: Remove when authentication is added
+                        .requestMatchers("/api/v1/**").permitAll() // TODO: Remove when authentication is added
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->
