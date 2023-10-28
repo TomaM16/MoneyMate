@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -183,11 +184,7 @@ public class TransactionsServiceTest {
 
         when(transactionMapper.toEntity(request, category)).thenReturn(newTransaction);
         when(transactionMapper.toResponse(newTransaction)).thenReturn(expectedTransactionResponse);
-        when(transactionCategoryRepository.findById(request.getCategoryId())).thenReturn(
-                mockTransactionCategories.stream()
-                        .filter(c -> c.getId().equals(request.getCategoryId()))
-                        .findFirst()
-        );
+        when(transactionCategoryRepository.findById(request.getCategoryId())).thenReturn(Optional.of(category));
         when(transactionRepository.save(newTransaction)).thenReturn(newTransaction);
 
         // when
