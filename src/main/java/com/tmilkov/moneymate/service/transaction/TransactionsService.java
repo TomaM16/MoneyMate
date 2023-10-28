@@ -1,12 +1,9 @@
 package com.tmilkov.moneymate.service.transaction;
 
-import com.tmilkov.moneymate.mapper.TransactionCategoryMapper;
 import com.tmilkov.moneymate.mapper.TransactionMapper;
 import com.tmilkov.moneymate.model.entity.transaction.Transaction;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
-import com.tmilkov.moneymate.model.request.TransactionCategoryRequest;
 import com.tmilkov.moneymate.model.request.TransactionRequest;
-import com.tmilkov.moneymate.model.response.TransactionCategoryResponse;
 import com.tmilkov.moneymate.model.response.TransactionResponse;
 import com.tmilkov.moneymate.repository.transaction.TransactionCategoryRepository;
 import com.tmilkov.moneymate.repository.transaction.TransactionRepository;
@@ -22,16 +19,7 @@ public class TransactionsService {
 
     private final TransactionRepository transactionRepository;
     private final TransactionCategoryRepository transactionCategoryRepository;
-
     private final TransactionMapper transactionMapper;
-    private final TransactionCategoryMapper transactionCategoryMapper;
-
-    public List<TransactionCategoryResponse> getAllCategories() {
-        return transactionCategoryRepository.findAll()
-                .stream()
-                .map(transactionCategoryMapper::toResponse)
-                .toList();
-    }
 
     public List<TransactionResponse> getAllTransactions() {
         return transactionRepository.findAll()
@@ -60,12 +48,5 @@ public class TransactionsService {
     public Void deleteTransaction(Long transactionId) {
         transactionRepository.deleteById(transactionId);
         return null;
-    }
-
-    public TransactionCategoryResponse addCategory(TransactionCategoryRequest request) {
-        final TransactionCategory category = transactionCategoryMapper.toEntity(request);
-        final var transactionCategory = transactionCategoryRepository.save(category);
-
-        return transactionCategoryMapper.toResponse(transactionCategory);
     }
 }

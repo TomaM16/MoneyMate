@@ -1,8 +1,6 @@
 package com.tmilkov.moneymate.restcontroller.transaction;
 
-import com.tmilkov.moneymate.model.request.TransactionCategoryRequest;
 import com.tmilkov.moneymate.model.request.TransactionRequest;
-import com.tmilkov.moneymate.model.response.TransactionCategoryResponse;
 import com.tmilkov.moneymate.model.response.TransactionResponse;
 import com.tmilkov.moneymate.service.transaction.TransactionsService;
 import jakarta.validation.Valid;
@@ -18,25 +16,6 @@ import java.util.List;
 public class TransactionRestController {
 
     private final TransactionsService service;
-
-    @GetMapping("/hello")
-    public ResponseEntity<String> sayHello() {
-        return ResponseEntity.ok("Hello from secured endpoint!");
-    }
-
-    // Get all categories
-    @GetMapping("/categories")
-    public ResponseEntity<List<TransactionCategoryResponse>> getAllCategories() {
-        return ResponseEntity.ok(service.getAllCategories());
-    }
-
-    // Add a new category
-    @PostMapping("/categories")
-    public ResponseEntity<TransactionCategoryResponse> addCategory(
-            @RequestBody @Valid TransactionCategoryRequest request
-    ) {
-        return ResponseEntity.ok(service.addCategory(request));
-    }
 
     // Get a specific transaction by ID
     @GetMapping("/{transactionId}")
