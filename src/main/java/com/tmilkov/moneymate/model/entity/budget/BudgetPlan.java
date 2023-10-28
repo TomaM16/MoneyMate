@@ -1,11 +1,9 @@
 package com.tmilkov.moneymate.model.entity.budget;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -29,7 +27,11 @@ public class BudgetPlan {
     private Date endDate;
     private BigDecimal monthlyBudget;
 
-    @JsonManagedReference
-    @ManyToMany(mappedBy = "budgetPlans")
+    @JsonBackReference
+    @ManyToMany
+    @NotEmpty(message = "At least one category is required")
+    @JoinTable(name = "TransactionCategory_BudgetPlan",
+            joinColumns = @JoinColumn(name = "plan_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<TransactionCategory> transactionCategories;
 }

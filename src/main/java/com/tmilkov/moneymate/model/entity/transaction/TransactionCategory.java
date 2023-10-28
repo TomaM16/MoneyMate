@@ -1,8 +1,11 @@
 package com.tmilkov.moneymate.model.entity.transaction;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.tmilkov.moneymate.model.entity.budget.BudgetPlan;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import lombok.*;
 
 import java.util.HashSet;
@@ -27,15 +30,8 @@ public class TransactionCategory {
     private String name;
     private String description;
 
-    @JsonBackReference
-    @ManyToMany
-    @JoinTable(name = "TransactionCategory_BudgetPlan",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "plan_id"))
+    @JsonManagedReference
+    @ManyToMany(mappedBy = "transactionCategories")
     private Set<BudgetPlan> budgetPlans = new HashSet<>();
-
-    public void addBudgetPlan(BudgetPlan budgetPlan) {
-        budgetPlans.add(budgetPlan);
-    }
 
 }

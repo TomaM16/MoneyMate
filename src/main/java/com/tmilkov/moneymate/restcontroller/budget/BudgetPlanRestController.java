@@ -17,15 +17,11 @@ public class BudgetPlanRestController {
 
     private final BudgetPlanService service;
 
-    // Get all budget plans by category
-    @GetMapping("/{categoryId}")
-    public ResponseEntity<List<BudgetPlanResponse>> getAllBudgetPlansByCategory(
-            @PathVariable Long categoryId
-    ) {
-        return ResponseEntity.ok(service.getAllBudgetPlansByCategory(categoryId));
+    @GetMapping
+    public ResponseEntity<List<BudgetPlanResponse>> getAllBudgetPlans() {
+        return ResponseEntity.ok(service.getAllBudgetPlans());
     }
 
-    // Add budget plan
     @PostMapping
     public ResponseEntity<BudgetPlanResponse> addBudgetPlan(
             @RequestBody @Valid BudgetPlanRequest request
