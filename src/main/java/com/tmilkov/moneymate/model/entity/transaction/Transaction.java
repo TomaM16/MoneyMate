@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Transaction {
+public class Transaction implements Comparable<Transaction> {
 
     @Id
     @GeneratedValue
@@ -26,5 +26,10 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "transaction_category_id")
     private TransactionCategory category;
+
+    @Override
+    public int compareTo(Transaction o) {
+        return getDate().compareTo(o.getDate());
+    }
 }
 

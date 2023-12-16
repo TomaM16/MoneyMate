@@ -43,4 +43,9 @@ public class TransactionRestController {
         return ResponseEntity.ok(service.deleteTransaction(transactionId));
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<TransactionResponse>> getRecentTransactions() {
+        return ResponseEntity.ok(service.getRecentTransactions());
+    }
+
 }

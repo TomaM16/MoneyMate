@@ -10,6 +10,7 @@ import com.tmilkov.moneymate.repository.transaction.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,9 +23,16 @@ public class TransactionsService {
     private final TransactionMapper transactionMapper;
 
     public List<TransactionResponse> getAllTransactions() {
-        return transactionRepository.findAll()
-                .stream()
+        return transactionRepository.findAll().stream()
                 .map(transactionMapper::toResponse)
+                .toList();
+    }
+
+    public List<TransactionResponse> getRecentTransactions() {
+        return transactionRepository.findAll().stream()
+                .sorted(Collections.reverseOrder())
+                .map(transactionMapper::toResponse)
+                .limit(Constants.NUMBER_RECENT_TRANSACTIONS)
                 .toList();
     }
 
@@ -49,4 +57,9 @@ public class TransactionsService {
         transactionRepository.deleteById(transactionId);
         return null;
     }
+
+    public interface Constants {
+        int NUMBER_RECENT_TRANSACTIONS = 5;
+    }
+
 }
