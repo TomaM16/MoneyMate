@@ -7,7 +7,11 @@ import com.tmilkov.moneymate.service.budget.BudgetPlanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -16,23 +20,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BudgetPlanRestController {
 
-    private final BudgetPlanService service;
+  private final BudgetPlanService service;
 
-    @GetMapping
-    public ResponseEntity<BudgetResponse> getBudget() {
-        return ResponseEntity.ok(service.getBudget());
-    }
+  @GetMapping
+  public ResponseEntity<BudgetResponse> getBudget() {
+    return ResponseEntity.ok(service.getBudget());
+  }
 
-    @GetMapping("/plans")
-    public ResponseEntity<List<BudgetPlanResponse>> getAllBudgetPlans() {
-        return ResponseEntity.ok(service.getAllBudgetPlans());
-    }
+  @GetMapping("/plans")
+  public ResponseEntity<List<BudgetPlanResponse>> getAllBudgetPlans() {
+    return ResponseEntity.ok(service.getAllBudgetPlans());
+  }
 
-    @PostMapping("/plans")
-    public ResponseEntity<BudgetPlanResponse> addBudgetPlan(
-            @RequestBody @Valid BudgetPlanRequest request
-    ) {
-        return ResponseEntity.ok(service.addBudgetPlan(request));
-    }
+  @PostMapping("/plans")
+  public ResponseEntity<BudgetPlanResponse> addBudgetPlan(
+    @RequestBody @Valid BudgetPlanRequest request
+  ) {
+    return ResponseEntity.ok(service.addBudgetPlan(request));
+  }
 
 }

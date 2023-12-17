@@ -15,28 +15,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BudgetPlanMapper {
 
-    private final TransactionCategoryMapper transactionCategoryMapper;
+  private final TransactionCategoryMapper transactionCategoryMapper;
 
-    public BudgetPlanResponse toResponse(BudgetPlan budgetPlan) {
-        return new BudgetPlanResponse(
-                budgetPlan.getId(),
-                budgetPlan.getName(),
-                budgetPlan.getStartDate(),
-                budgetPlan.getEndDate(),
-                budgetPlan.getMonthlyBudget(),
-                budgetPlan.getTransactionCategories().stream()
-                        .map(transactionCategoryMapper::toResponse)
-                        .collect(Collectors.toSet())
-        );
-    }
+  public BudgetPlanResponse toResponse(BudgetPlan budgetPlan) {
+    return new BudgetPlanResponse(
+      budgetPlan.getId(),
+      budgetPlan.getName(),
+      budgetPlan.getStartDate(),
+      budgetPlan.getEndDate(),
+      budgetPlan.getMonthlyBudget(),
+      budgetPlan.getTransactionCategories().stream()
+        .map(transactionCategoryMapper::toResponse)
+        .collect(Collectors.toSet())
+    );
+  }
 
-    public BudgetPlan toEntity(BudgetPlanRequest request, Set<TransactionCategory> transactionCategories) {
-        return BudgetPlan.builder()
-                .name(request.getName())
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .monthlyBudget(request.getMonthlyBudget())
-                .transactionCategories(transactionCategories)
-                .build();
-    }
+  public BudgetPlan toEntity(BudgetPlanRequest request, Set<TransactionCategory> transactionCategories) {
+    return BudgetPlan.builder()
+      .name(request.getName())
+      .startDate(request.getStartDate())
+      .endDate(request.getEndDate())
+      .monthlyBudget(request.getMonthlyBudget())
+      .transactionCategories(transactionCategories)
+      .build();
+  }
 }

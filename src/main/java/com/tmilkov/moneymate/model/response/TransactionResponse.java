@@ -11,10 +11,10 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class TransactionResponse {
-    private final Long id;
-    private final Date date;
-    private final String description;
-    private final BigDecimal amount;
-    private final TransactionType type;
-    private final TransactionCategory category;
+  private final Long id;
+  private final Date date;
+  private final String description;
+  private final BigDecimal amount;
+  private final TransactionType type;
+  private final TransactionCategory category;
 }

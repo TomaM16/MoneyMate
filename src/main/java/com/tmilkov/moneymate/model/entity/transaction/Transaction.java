@@ -1,7 +1,15 @@
 package com.tmilkov.moneymate.model.entity.transaction;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,22 +22,22 @@ import java.util.Date;
 @Entity
 public class Transaction implements Comparable<Transaction> {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+  @Id
+  @GeneratedValue
+  private Long id;
 
-    private Date date;
-    private String description;
-    private BigDecimal amount;
-    private TransactionType type;
+  private Date date;
+  private String description;
+  private BigDecimal amount;
+  private TransactionType type;
 
-    @ManyToOne
-    @JoinColumn(name = "transaction_category_id")
-    private TransactionCategory category;
+  @ManyToOne
+  @JoinColumn(name = "transaction_category_id")
+  private TransactionCategory category;
 
-    @Override
-    public int compareTo(Transaction o) {
-        return getDate().compareTo(o.getDate());
-    }
+  @Override
+  public int compareTo(Transaction o) {
+    return getDate().compareTo(o.getDate());
+  }
 }
 

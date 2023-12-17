@@ -30,168 +30,168 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class TransactionsServiceTest {
 
-    @Mock
-    private TransactionCategoryRepository transactionCategoryRepository;
-    @Mock
-    private TransactionRepository transactionRepository;
+  @Mock
+  private TransactionCategoryRepository transactionCategoryRepository;
+  @Mock
+  private TransactionRepository transactionRepository;
 
-    @Mock
-    private TransactionMapper transactionMapper;
+  @Mock
+  private TransactionMapper transactionMapper;
 
-    @InjectMocks
-    private TransactionsService transactionsService;
+  @InjectMocks
+  private TransactionsService transactionsService;
 
-    private static List<TransactionCategory> mockTransactionCategories;
-    private static List<Transaction> mockTransactions;
+  private static List<TransactionCategory> mockTransactionCategories;
+  private static List<Transaction> mockTransactions;
 
-    @BeforeAll
-    static void before() {
-        mockTransactionCategories = List.of(
-                new TransactionCategory(1L, "Category1", "Category1 description", Set.of()),
-                new TransactionCategory(2L, "Category2", "Category2 description", Set.of()),
-                new TransactionCategory(3L, "Category3", "Category3 description", Set.of())
-        );
-        mockTransactions = List.of(
-                new Transaction(
-                        1L,
-                        new Date(),
-                        "Transaction1",
-                        new BigDecimal("100.0"),
-                        TransactionType.INCOME,
-                        new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
-                ),
-                new Transaction(
-                        2L,
-                        new Date(),
-                        "Transaction2",
-                        new BigDecimal("100.0"),
-                        TransactionType.INCOME,
-                        new TransactionCategory(2L, "Category1", "Category1 description", Set.of())
-                ),
-                new Transaction(
-                        3L,
-                        new Date(),
-                        "Transaction3",
-                        new BigDecimal("100.0"),
-                        TransactionType.INCOME,
-                        new TransactionCategory(3L, "Category1", "Category1 description", Set.of())
-                )
-        );
-    }
+  @BeforeAll
+  static void before() {
+    mockTransactionCategories = List.of(
+      new TransactionCategory(1L, "Category1", "Category1 description", Set.of()),
+      new TransactionCategory(2L, "Category2", "Category2 description", Set.of()),
+      new TransactionCategory(3L, "Category3", "Category3 description", Set.of())
+    );
+    mockTransactions = List.of(
+      new Transaction(
+        1L,
+        new Date(),
+        "Transaction1",
+        new BigDecimal("100.0"),
+        TransactionType.INCOME,
+        new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
+      ),
+      new Transaction(
+        2L,
+        new Date(),
+        "Transaction2",
+        new BigDecimal("100.0"),
+        TransactionType.INCOME,
+        new TransactionCategory(2L, "Category1", "Category1 description", Set.of())
+      ),
+      new Transaction(
+        3L,
+        new Date(),
+        "Transaction3",
+        new BigDecimal("100.0"),
+        TransactionType.INCOME,
+        new TransactionCategory(3L, "Category1", "Category1 description", Set.of())
+      )
+    );
+  }
 
-    @Test
-    public void testGetAllTransactions() {
-        // given
-        final var expectedTransactionResponses = List.of(
-                new TransactionResponse(
-                        1L,
-                        new Date(),
-                        "Transaction1",
-                        new BigDecimal("100.0"),
-                        TransactionType.INCOME,
-                        new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
-                ),
-                new TransactionResponse(
-                        2L,
-                        new Date(),
-                        "Transaction2",
-                        new BigDecimal("100.0"),
-                        TransactionType.INCOME,
-                        new TransactionCategory(2L, "Category1", "Category1 description", Set.of())
-                ),
-                new TransactionResponse(
-                        3L,
-                        new Date(),
-                        "Transaction3",
-                        new BigDecimal("100.0"),
-                        TransactionType.INCOME,
-                        new TransactionCategory(3L, "Category1", "Category1 description", Set.of())
-                )
-        );
+  @Test
+  public void testGetAllTransactions() {
+    // given
+    final var expectedTransactionResponses = List.of(
+      new TransactionResponse(
+        1L,
+        new Date(),
+        "Transaction1",
+        new BigDecimal("100.0"),
+        TransactionType.INCOME,
+        new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
+      ),
+      new TransactionResponse(
+        2L,
+        new Date(),
+        "Transaction2",
+        new BigDecimal("100.0"),
+        TransactionType.INCOME,
+        new TransactionCategory(2L, "Category1", "Category1 description", Set.of())
+      ),
+      new TransactionResponse(
+        3L,
+        new Date(),
+        "Transaction3",
+        new BigDecimal("100.0"),
+        TransactionType.INCOME,
+        new TransactionCategory(3L, "Category1", "Category1 description", Set.of())
+      )
+    );
 
-        when(transactionMapper.toResponse(any(Transaction.class)))
-                .thenAnswer(invocation -> {
-                    Transaction inputTransaction = invocation.getArgument(0);
-                    return expectedTransactionResponses.stream()
-                            .filter(response -> response.getId().equals(inputTransaction.getId()))
-                            .findFirst()
-                            .orElse(null);
-                });
-        when(transactionRepository.findAll()).thenReturn(mockTransactions);
+    when(transactionMapper.toResponse(any(Transaction.class)))
+      .thenAnswer(invocation -> {
+        Transaction inputTransaction = invocation.getArgument(0);
+        return expectedTransactionResponses.stream()
+          .filter(response -> response.getId().equals(inputTransaction.getId()))
+          .findFirst()
+          .orElse(null);
+      });
+    when(transactionRepository.findAll()).thenReturn(mockTransactions);
 
-        // when
-        List<TransactionResponse> transactions = transactionsService.getAllTransactions();
+    // when
+    List<TransactionResponse> transactions = transactionsService.getAllTransactions();
 
-        // then
-        assertEquals(expectedTransactionResponses, transactions);
-    }
+    // then
+    assertEquals(expectedTransactionResponses, transactions);
+  }
 
-    @Test
-    public void testGetTransaction() {
-        // given
-        final Long id = 1L;
-        final var transaction = mockTransactions.stream()
-                .filter(t -> t.getId().equals(id))
-                .findFirst();
-        final var expectedTransactionResponse = new TransactionResponse(
-                1L,
-                new Date(),
-                "Transaction1",
-                new BigDecimal("100.0"),
-                TransactionType.INCOME,
-                new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
-        );
-        when(transactionRepository.findById(id)).thenReturn(transaction);
-        when(transactionMapper.toResponse(transaction.orElseThrow())).thenReturn(expectedTransactionResponse);
+  @Test
+  public void testGetTransaction() {
+    // given
+    final Long id = 1L;
+    final var transaction = mockTransactions.stream()
+      .filter(t -> t.getId().equals(id))
+      .findFirst();
+    final var expectedTransactionResponse = new TransactionResponse(
+      1L,
+      new Date(),
+      "Transaction1",
+      new BigDecimal("100.0"),
+      TransactionType.INCOME,
+      new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
+    );
+    when(transactionRepository.findById(id)).thenReturn(transaction);
+    when(transactionMapper.toResponse(transaction.orElseThrow())).thenReturn(expectedTransactionResponse);
 
-        // when
-        TransactionResponse transactionResponse = transactionsService.getTransaction(id);
+    // when
+    TransactionResponse transactionResponse = transactionsService.getTransaction(id);
 
-        // then
-        assertEquals(expectedTransactionResponse, transactionResponse);
-    }
+    // then
+    assertEquals(expectedTransactionResponse, transactionResponse);
+  }
 
-    @Test
-    public void testAddTransaction() {
-        // given
-        final var category = new TransactionCategory(1L, "Category1", "Category1 description", Set.of());
-        final var request = new TransactionRequest(
-                new Date(),
-                "Transaction1",
-                new BigDecimal("100.0"),
-                TransactionType.INCOME,
-                category.getId()
-        );
-        final var expectedTransactionResponse = new TransactionResponse(
-                1L,
-                new Date(),
-                "Transaction1",
-                new BigDecimal("100.0"),
-                TransactionType.INCOME,
-                category
-        );
-        final var newTransaction = Transaction.builder()
-                .date(request.getDate())
-                .description(request.getDescription())
-                .amount(request.getAmount())
-                .category(
-                        mockTransactionCategories.stream()
-                                .filter(c -> c.getId().equals(request.getCategoryId()))
-                                .findFirst()
-                                .orElseThrow()
-                )
-                .build();
+  @Test
+  public void testAddTransaction() {
+    // given
+    final var category = new TransactionCategory(1L, "Category1", "Category1 description", Set.of());
+    final var request = new TransactionRequest(
+      new Date(),
+      "Transaction1",
+      new BigDecimal("100.0"),
+      TransactionType.INCOME,
+      category.getId()
+    );
+    final var expectedTransactionResponse = new TransactionResponse(
+      1L,
+      new Date(),
+      "Transaction1",
+      new BigDecimal("100.0"),
+      TransactionType.INCOME,
+      category
+    );
+    final var newTransaction = Transaction.builder()
+      .date(request.getDate())
+      .description(request.getDescription())
+      .amount(request.getAmount())
+      .category(
+        mockTransactionCategories.stream()
+          .filter(c -> c.getId().equals(request.getCategoryId()))
+          .findFirst()
+          .orElseThrow()
+      )
+      .build();
 
-        when(transactionMapper.toEntity(request, category)).thenReturn(newTransaction);
-        when(transactionMapper.toResponse(newTransaction)).thenReturn(expectedTransactionResponse);
-        when(transactionCategoryRepository.findById(request.getCategoryId())).thenReturn(Optional.of(category));
-        when(transactionRepository.save(newTransaction)).thenReturn(newTransaction);
+    when(transactionMapper.toEntity(request, category)).thenReturn(newTransaction);
+    when(transactionMapper.toResponse(newTransaction)).thenReturn(expectedTransactionResponse);
+    when(transactionCategoryRepository.findById(request.getCategoryId())).thenReturn(Optional.of(category));
+    when(transactionRepository.save(newTransaction)).thenReturn(newTransaction);
 
-        // when
-        final TransactionResponse transactionResponse = transactionsService.addTransaction(request);
+    // when
+    final TransactionResponse transactionResponse = transactionsService.addTransaction(request);
 
-        // then
-        assertEquals(expectedTransactionResponse, transactionResponse);
-    }
+    // then
+    assertEquals(expectedTransactionResponse, transactionResponse);
+  }
 
 }

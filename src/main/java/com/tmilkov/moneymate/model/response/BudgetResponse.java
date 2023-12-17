@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 public class BudgetResponse {
-    private final int used;
-    private final BigDecimal balance;
-    private final BigDecimal income;
-    private final BigDecimal expenses;
+  private final int used;
+  private final BigDecimal balance;
+  private final BigDecimal income;
+  private final BigDecimal expenses;
 }
