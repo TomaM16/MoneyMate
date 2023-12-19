@@ -7,18 +7,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TransactionCategoryMapper {
-    public TransactionCategoryResponse toResponse(TransactionCategory category) {
-        return new TransactionCategoryResponse(
-                category.getId(),
-                category.getName(),
-                category.getDescription()
-        );
-    }
+  public TransactionCategoryResponse toResponse(TransactionCategory category) {
+    return new TransactionCategoryResponse(
+      category.getId(),
+      category.getName(),
+      category.getDescription()
+    );
+  }
 
-    public TransactionCategory toEntity(TransactionCategoryRequest request) {
-        return TransactionCategory.builder()
-                .name(request.getName())
-                .description(request.getDescription())
-                .build();
-    }
+  public TransactionCategory toEntity(TransactionCategoryRequest request) {
+    return TransactionCategory.builder()
+      .name(request.getName())
+      .description(request.getDescription())
+      .build();
+  }
 }

@@ -8,24 +8,24 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TransactionMapper {
-    public TransactionResponse toResponse(Transaction transaction) {
-        return new TransactionResponse(
-                transaction.getId(),
-                transaction.getDate(),
-                transaction.getDescription(),
-                transaction.getAmount(),
-                transaction.getType(),
-                transaction.getCategory()
-        );
-    }
+  public TransactionResponse toResponse(Transaction transaction) {
+    return new TransactionResponse(
+      transaction.getId(),
+      transaction.getDate(),
+      transaction.getDescription(),
+      transaction.getAmount(),
+      transaction.getType(),
+      transaction.getCategory()
+    );
+  }
 
-    public Transaction toEntity(TransactionRequest request, TransactionCategory category) {
-        return Transaction.builder()
-                .date(request.getDate())
-                .description(request.getDescription())
-                .amount(request.getAmount())
-                .type(request.getType())
-                .category(category)
-                .build();
-    }
+  public Transaction toEntity(TransactionRequest request, TransactionCategory category) {
+    return Transaction.builder()
+      .date(request.getDate())
+      .description(request.getDescription())
+      .amount(request.getAmount())
+      .type(request.getType())
+      .category(category)
+      .build();
+  }
 }

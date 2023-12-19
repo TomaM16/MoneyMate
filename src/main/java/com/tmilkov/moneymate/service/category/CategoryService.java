@@ -14,21 +14,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private final TransactionCategoryRepository transactionCategoryRepository;
-    private final TransactionCategoryMapper transactionCategoryMapper;
+  private final TransactionCategoryRepository transactionCategoryRepository;
+  private final TransactionCategoryMapper transactionCategoryMapper;
 
-    public List<TransactionCategoryResponse> getAllCategories() {
-        return transactionCategoryRepository.findAll()
-                .stream()
-                .map(transactionCategoryMapper::toResponse)
-                .toList();
-    }
+  public List<TransactionCategoryResponse> getAllCategories() {
+    return transactionCategoryRepository.findAll()
+      .stream()
+      .map(transactionCategoryMapper::toResponse)
+      .toList();
+  }
 
-    public TransactionCategoryResponse addCategory(TransactionCategoryRequest request) {
-        final TransactionCategory category = transactionCategoryMapper.toEntity(request);
-        final var transactionCategory = transactionCategoryRepository.save(category);
+  public TransactionCategoryResponse addCategory(TransactionCategoryRequest request) {
+    final TransactionCategory category = transactionCategoryMapper.toEntity(request);
+    final var transactionCategory = transactionCategoryRepository.save(category);
 
-        return transactionCategoryMapper.toResponse(transactionCategory);
-    }
+    return transactionCategoryMapper.toResponse(transactionCategory);
+  }
 
 }

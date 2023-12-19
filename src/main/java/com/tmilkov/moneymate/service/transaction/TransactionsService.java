@@ -10,6 +10,7 @@ import com.tmilkov.moneymate.repository.transaction.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -17,36 +18,48 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class TransactionsService {
 
-    private final TransactionRepository transactionRepository;
-    private final TransactionCategoryRepository transactionCategoryRepository;
-    private final TransactionMapper transactionMapper;
+  private final TransactionRepository transactionRepository;
+  private final TransactionCategoryRepository transactionCategoryRepository;
+  private final TransactionMapper transactionMapper;
 
-    public List<TransactionResponse> getAllTransactions() {
-        return transactionRepository.findAll()
-                .stream()
-                .map(transactionMapper::toResponse)
-                .toList();
-    }
+  public List<TransactionResponse> getAllTransactions() {
+    return transactionRepository.findAll().stream()
+      .map(transactionMapper::toResponse)
+      .toList();
+  }
 
-    public TransactionResponse getTransaction(Long id) throws NoSuchElementException {
-        final var transaction = transactionRepository.findById(id).orElseThrow();
-        return transactionMapper.toResponse(transaction);
-    }
+  public List<TransactionResponse> getRecentTransactions() {
+    return transactionRepository.findAll().stream()
+      .sorted(Collections.reverseOrder())
+      .map(transactionMapper::toResponse)
+      .limit(Constants.NUMBER_RECENT_TRANSACTIONS)
+      .toList();
+  }
 
-    private TransactionCategory getTransactionCategory(Long id) throws NoSuchElementException {
-        return transactionCategoryRepository.findById(id).orElseThrow();
-    }
+  public TransactionResponse getTransaction(Long id) throws NoSuchElementException {
+    final var transaction = transactionRepository.findById(id).orElseThrow();
+    return transactionMapper.toResponse(transaction);
+  }
 
-    public TransactionResponse addTransaction(TransactionRequest request) throws NoSuchElementException {
-        final TransactionCategory category = getTransactionCategory(request.getCategoryId());
-        final Transaction newTransaction = transactionMapper.toEntity(request, category);
-        final Transaction transaction = transactionRepository.save(newTransaction);
+  private TransactionCategory getTransactionCategory(Long id) throws NoSuchElementException {
+    return transactionCategoryRepository.findById(id).orElseThrow();
+  }
 
-        return transactionMapper.toResponse(transaction);
-    }
+  public TransactionResponse addTransaction(TransactionRequest request) throws NoSuchElementException {
+    final TransactionCategory category = getTransactionCategory(request.getCategoryId());
+    final Transaction newTransaction = transactionMapper.toEntity(request, category);
+    final Transaction transaction = transactionRepository.save(newTransaction);
 
-    public Void deleteTransaction(Long transactionId) {
-        transactionRepository.deleteById(transactionId);
-        return null;
-    }
+    return transactionMapper.toResponse(transaction);
+  }
+
+  public Void deleteTransaction(Long transactionId) {
+    transactionRepository.deleteById(transactionId);
+    return null;
+  }
+
+  public interface Constants {
+    int NUMBER_RECENT_TRANSACTIONS = 5;
+  }
+
 }
