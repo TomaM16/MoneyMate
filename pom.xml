@@ -127,6 +127,8 @@
         <version>3.7.0.1746</version>
       </plugin>
 		</plugins>
+
+    <finalName>moneymate</finalName>
 	</build>
 
 </project>
