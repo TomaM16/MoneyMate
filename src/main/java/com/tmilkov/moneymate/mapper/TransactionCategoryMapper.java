@@ -1,6 +1,7 @@
 package com.tmilkov.moneymate.mapper;
 
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
+import com.tmilkov.moneymate.model.entity.user.User;
 import com.tmilkov.moneymate.model.request.TransactionCategoryRequest;
 import com.tmilkov.moneymate.model.response.TransactionCategoryResponse;
 import org.springframework.stereotype.Component;
@@ -15,10 +16,11 @@ public class TransactionCategoryMapper {
     );
   }
 
-  public TransactionCategory toEntity(TransactionCategoryRequest request) {
+  public TransactionCategory toEntity(TransactionCategoryRequest request, User user) {
     return TransactionCategory.builder()
       .name(request.getName())
       .description(request.getDescription())
+      .user(user)
       .build();
   }
 }

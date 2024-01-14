@@ -1,5 +1,7 @@
 package com.tmilkov.moneymate.model.entity.transaction;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.tmilkov.moneymate.model.entity.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -34,6 +36,11 @@ public class Transaction implements Comparable<Transaction> {
   @ManyToOne
   @JoinColumn(name = "transaction_category_id")
   private TransactionCategory category;
+
+  @JsonBackReference
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
   @Override
   public int compareTo(Transaction o) {

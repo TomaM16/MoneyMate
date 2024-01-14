@@ -5,9 +5,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthenticationMapper {
-  public AuthenticationResponse toResponse(String token) {
+  public AuthenticationResponse toResponse(String jwtToken, String refreshToken) {
     return AuthenticationResponse.builder()
-      .token(token)
+      .accessToken(jwtToken)
+      .refreshToken(refreshToken)
       .build();
   }
 }

@@ -1,10 +1,14 @@
 package com.tmilkov.moneymate.service;
 
+import com.tmilkov.moneymate.mapper.AuthenticationMapper;
 import com.tmilkov.moneymate.mapper.TransactionMapper;
 import com.tmilkov.moneymate.model.entity.transaction.Transaction;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionType;
+import com.tmilkov.moneymate.model.entity.user.Role;
+import com.tmilkov.moneymate.model.entity.user.User;
 import com.tmilkov.moneymate.model.request.TransactionRequest;
+import com.tmilkov.moneymate.model.response.TransactionCategoryResponse;
 import com.tmilkov.moneymate.model.response.TransactionResponse;
 import com.tmilkov.moneymate.repository.transaction.TransactionCategoryRepository;
 import com.tmilkov.moneymate.repository.transaction.TransactionRepository;
@@ -15,8 +19,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +32,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
@@ -41,15 +50,22 @@ public class TransactionsServiceTest {
   @InjectMocks
   private TransactionsService transactionsService;
 
+  private static List<User> mockUsers;
   private static List<TransactionCategory> mockTransactionCategories;
   private static List<Transaction> mockTransactions;
 
   @BeforeAll
   static void before() {
+    mockUsers = List.of(
+      new User(1L, "User 1", "Name 1", "email 1", "pass 1", Role.USER),
+      new User(2L, "User 2", "Name 2", "email 2", "pass 2", Role.USER),
+      new User(3L, "User 3", "Name 3", "email 3", "pass 3", Role.ADMIN)
+    );
+
     mockTransactionCategories = List.of(
-      new TransactionCategory(1L, "Category1", "Category1 description", Set.of()),
-      new TransactionCategory(2L, "Category2", "Category2 description", Set.of()),
-      new TransactionCategory(3L, "Category3", "Category3 description", Set.of())
+      new TransactionCategory(1L, mockUsers.get(0), "Category1", "Category1 description", Set.of()),
+      new TransactionCategory(2L, mockUsers.get(0), "Category2", "Category2 description", Set.of()),
+      new TransactionCategory(3L, mockUsers.get(1), "Category3", "Category3 description", Set.of())
     );
     mockTransactions = List.of(
       new Transaction(
@@ -58,7 +74,8 @@ public class TransactionsServiceTest {
         "Transaction1",
         new BigDecimal("100.0"),
         TransactionType.INCOME,
-        new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
+        mockTransactionCategories.get(0),
+        mockTransactionCategories.get(0).getUser()
       ),
       new Transaction(
         2L,
@@ -66,7 +83,8 @@ public class TransactionsServiceTest {
         "Transaction2",
         new BigDecimal("100.0"),
         TransactionType.INCOME,
-        new TransactionCategory(2L, "Category1", "Category1 description", Set.of())
+        mockTransactionCategories.get(0),
+        mockTransactionCategories.get(0).getUser()
       ),
       new Transaction(
         3L,
@@ -74,7 +92,8 @@ public class TransactionsServiceTest {
         "Transaction3",
         new BigDecimal("100.0"),
         TransactionType.INCOME,
-        new TransactionCategory(3L, "Category1", "Category1 description", Set.of())
+        mockTransactionCategories.get(1),
+        mockTransactionCategories.get(1).getUser()
       )
     );
   }
@@ -89,7 +108,11 @@ public class TransactionsServiceTest {
         "Transaction1",
         new BigDecimal("100.0"),
         TransactionType.INCOME,
-        new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
+        new TransactionCategoryResponse(
+          1L,
+          "Category1",
+          "Category1 description"
+        )
       ),
       new TransactionResponse(
         2L,
@@ -97,7 +120,7 @@ public class TransactionsServiceTest {
         "Transaction2",
         new BigDecimal("100.0"),
         TransactionType.INCOME,
-        new TransactionCategory(2L, "Category1", "Category1 description", Set.of())
+        new TransactionCategoryResponse(2L, "Category2", "Category2 description")
       ),
       new TransactionResponse(
         3L,
@@ -105,9 +128,12 @@ public class TransactionsServiceTest {
         "Transaction3",
         new BigDecimal("100.0"),
         TransactionType.INCOME,
-        new TransactionCategory(3L, "Category1", "Category1 description", Set.of())
+        new TransactionCategoryResponse(3L, "Category3", "Category3 description")
       )
     );
+
+    final var mockUser = mockUsers.get(0);
+    Authentication authentication = getAuthenticationForUser(mockUser);
 
     when(transactionMapper.toResponse(any(Transaction.class)))
       .thenAnswer(invocation -> {
@@ -117,13 +143,22 @@ public class TransactionsServiceTest {
           .findFirst()
           .orElse(null);
       });
-    when(transactionRepository.findAll()).thenReturn(mockTransactions);
+
+    when(transactionRepository.findAllByUserId(mockUser.getId())).thenReturn(mockTransactions);
 
     // when
-    List<TransactionResponse> transactions = transactionsService.getAllTransactions();
+    List<TransactionResponse> transactions = transactionsService.getAllTransactionsByUser(authentication);
 
     // then
     assertEquals(expectedTransactionResponses, transactions);
+  }
+
+  private Authentication getAuthenticationForUser(User user) {
+    return new UsernamePasswordAuthenticationToken(
+      user,
+      null,
+      user.getAuthorities()
+    );
   }
 
   @Test
@@ -139,13 +174,17 @@ public class TransactionsServiceTest {
       "Transaction1",
       new BigDecimal("100.0"),
       TransactionType.INCOME,
-      new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
+      new TransactionCategoryResponse(1L, "Category1", "Category1 description")
     );
-    when(transactionRepository.findById(id)).thenReturn(transaction);
+
+    final var mockUser = mockUsers.get(0);
+    Authentication authentication = getAuthenticationForUser(mockUser);
+
+    when(transactionRepository.findByIdAndUserId(id, mockUser.getId())).thenReturn(transaction);
     when(transactionMapper.toResponse(transaction.orElseThrow())).thenReturn(expectedTransactionResponse);
 
     // when
-    TransactionResponse transactionResponse = transactionsService.getTransaction(id);
+    TransactionResponse transactionResponse = transactionsService.getTransactionByUser(id, authentication);
 
     // then
     assertEquals(expectedTransactionResponse, transactionResponse);
@@ -154,7 +193,14 @@ public class TransactionsServiceTest {
   @Test
   public void testAddTransaction() {
     // given
-    final var category = new TransactionCategory(1L, "Category1", "Category1 description", Set.of());
+    final var user = new User(1L, "User 1", "Name 1", "email 1", "pass 1", Role.USER);
+    final var category = new TransactionCategory(
+      1L,
+      user,
+      "Category1",
+      "Category1 description",
+      Set.of()
+    );
     final var request = new TransactionRequest(
       new Date(),
       "Transaction1",
@@ -168,7 +214,7 @@ public class TransactionsServiceTest {
       "Transaction1",
       new BigDecimal("100.0"),
       TransactionType.INCOME,
-      category
+      new TransactionCategoryResponse(1L, "Category1", "Category1 description")
     );
     final var newTransaction = Transaction.builder()
       .date(request.getDate())
@@ -182,13 +228,16 @@ public class TransactionsServiceTest {
       )
       .build();
 
-    when(transactionMapper.toEntity(request, category)).thenReturn(newTransaction);
+    final var mockUser = mockUsers.get(0);
+    Authentication authentication = getAuthenticationForUser(mockUser);
+
+    when(transactionMapper.toEntity(request, category, user)).thenReturn(newTransaction);
     when(transactionMapper.toResponse(newTransaction)).thenReturn(expectedTransactionResponse);
-    when(transactionCategoryRepository.findById(request.getCategoryId())).thenReturn(Optional.of(category));
+    when(transactionCategoryRepository.findByIdAndUserId(request.getCategoryId(), mockUser.getId())).thenReturn(Optional.of(category));
     when(transactionRepository.save(newTransaction)).thenReturn(newTransaction);
 
     // when
-    final TransactionResponse transactionResponse = transactionsService.addTransaction(request);
+    final TransactionResponse transactionResponse = transactionsService.addTransactionForUser(request, authentication);
 
     // then
     assertEquals(expectedTransactionResponse, transactionResponse);

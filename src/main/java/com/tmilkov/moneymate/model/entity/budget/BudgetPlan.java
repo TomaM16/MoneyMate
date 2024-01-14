@@ -2,12 +2,14 @@ package com.tmilkov.moneymate.model.entity.budget;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
+import com.tmilkov.moneymate.model.entity.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,4 +45,10 @@ public class BudgetPlan {
     joinColumns = @JoinColumn(name = "plan_id"),
     inverseJoinColumns = @JoinColumn(name = "category_id"))
   private Set<TransactionCategory> transactionCategories;
+
+  @JsonBackReference
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
 }

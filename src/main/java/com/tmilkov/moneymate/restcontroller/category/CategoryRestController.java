@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -23,16 +24,17 @@ public class CategoryRestController {
 
   // Get all categories
   @GetMapping
-  public ResponseEntity<List<TransactionCategoryResponse>> getAllCategories() {
-    return ResponseEntity.ok(service.getAllCategories());
+  public ResponseEntity<List<TransactionCategoryResponse>> getAllCategories(Principal connectedUser) {
+    return ResponseEntity.ok(service.getAllCategoriesByUser(connectedUser));
   }
 
   // Add a new category
   @PostMapping
   public ResponseEntity<TransactionCategoryResponse> addCategory(
-    @RequestBody @Valid TransactionCategoryRequest request
+    @RequestBody @Valid TransactionCategoryRequest request,
+    Principal connectedUser
   ) {
-    return ResponseEntity.ok(service.addCategory(request));
+    return ResponseEntity.ok(service.addCategoryForUser(request, connectedUser));
   }
 
 }

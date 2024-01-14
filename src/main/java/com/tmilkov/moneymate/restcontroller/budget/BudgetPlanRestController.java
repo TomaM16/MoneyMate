@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -23,20 +24,21 @@ public class BudgetPlanRestController {
   private final BudgetPlanService service;
 
   @GetMapping
-  public ResponseEntity<BudgetResponse> getBudget() {
-    return ResponseEntity.ok(service.getBudget());
+  public ResponseEntity<BudgetResponse> getBudget(Principal connectedUser) {
+    return ResponseEntity.ok(service.getBudgetByUser(connectedUser));
   }
 
   @GetMapping("/plans")
-  public ResponseEntity<List<BudgetPlanResponse>> getAllBudgetPlans() {
-    return ResponseEntity.ok(service.getAllBudgetPlans());
+  public ResponseEntity<List<BudgetPlanResponse>> getAllBudgetPlans(Principal connectedUser) {
+    return ResponseEntity.ok(service.getAllBudgetPlansByUser(connectedUser));
   }
 
   @PostMapping("/plans")
   public ResponseEntity<BudgetPlanResponse> addBudgetPlan(
-    @RequestBody @Valid BudgetPlanRequest request
+    @RequestBody @Valid BudgetPlanRequest request,
+    Principal connectedUser
   ) {
-    return ResponseEntity.ok(service.addBudgetPlan(request));
+    return ResponseEntity.ok(service.addBudgetPlanForUser(request, connectedUser));
   }
 
 }

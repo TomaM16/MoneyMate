@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -25,33 +26,37 @@ public class TransactionRestController {
 
   // Get a specific transaction by ID
   @GetMapping("/{transactionId}")
-  public ResponseEntity<TransactionResponse> getTransaction(@PathVariable Long transactionId) {
-    return ResponseEntity.ok(service.getTransaction(transactionId));
+  public ResponseEntity<TransactionResponse> getTransaction(
+    @PathVariable Long transactionId,
+    Principal connectedUser
+  ) {
+    return ResponseEntity.ok(service.getTransactionByUser(transactionId, connectedUser));
   }
 
   // Get all transactions
   @GetMapping
-  public ResponseEntity<List<TransactionResponse>> getAllTransactions() {
-    return ResponseEntity.ok(service.getAllTransactions());
+  public ResponseEntity<List<TransactionResponse>> getAllTransactions(Principal connectedUser) {
+    return ResponseEntity.ok(service.getAllTransactionsByUser(connectedUser));
   }
 
   // Add a new transaction
   @PostMapping
   public ResponseEntity<TransactionResponse> addTransaction(
-    @RequestBody @Valid TransactionRequest request
+    @RequestBody @Valid TransactionRequest request,
+    Principal connectedUser
   ) {
-    return ResponseEntity.ok(service.addTransaction(request));
+    return ResponseEntity.ok(service.addTransactionForUser(request, connectedUser));
   }
 
   // Delete a specific transaction by ID
   @DeleteMapping("/{transactionId}")
-  public ResponseEntity<Void> deleteTransaction(@PathVariable Long transactionId) {
-    return ResponseEntity.ok(service.deleteTransaction(transactionId));
+  public ResponseEntity<Void> deleteTransaction(@PathVariable Long transactionId, Principal connectedUser) {
+    return ResponseEntity.ok(service.deleteTransactionForUser(transactionId, connectedUser));
   }
 
   @GetMapping("/recent")
-  public ResponseEntity<List<TransactionResponse>> getRecentTransactions() {
-    return ResponseEntity.ok(service.getRecentTransactions());
+  public ResponseEntity<List<TransactionResponse>> getRecentTransactions(Principal connectedUser) {
+    return ResponseEntity.ok(service.getRecentTransactionsByUser(connectedUser));
   }
 
 }

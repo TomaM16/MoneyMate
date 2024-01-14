@@ -1,11 +1,15 @@
 package com.tmilkov.moneymate.model.entity.transaction;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.tmilkov.moneymate.model.entity.budget.BudgetPlan;
+import com.tmilkov.moneymate.model.entity.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,9 +31,10 @@ public class TransactionCategory {
   @GeneratedValue
   private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+  @JsonBackReference
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
   private String name;
   private String description;

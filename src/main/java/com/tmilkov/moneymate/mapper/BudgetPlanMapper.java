@@ -2,6 +2,7 @@ package com.tmilkov.moneymate.mapper;
 
 import com.tmilkov.moneymate.model.entity.budget.BudgetPlan;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
+import com.tmilkov.moneymate.model.entity.user.User;
 import com.tmilkov.moneymate.model.request.BudgetPlanRequest;
 import com.tmilkov.moneymate.model.response.BudgetPlanResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,13 +31,14 @@ public class BudgetPlanMapper {
     );
   }
 
-  public BudgetPlan toEntity(BudgetPlanRequest request, Set<TransactionCategory> transactionCategories) {
+  public BudgetPlan toEntity(BudgetPlanRequest request, Set<TransactionCategory> transactionCategories, User user) {
     return BudgetPlan.builder()
       .name(request.getName())
       .startDate(request.getStartDate())
       .endDate(request.getEndDate())
       .monthlyBudget(request.getMonthlyBudget())
       .transactionCategories(transactionCategories)
+      .user(user)
       .build();
   }
 }

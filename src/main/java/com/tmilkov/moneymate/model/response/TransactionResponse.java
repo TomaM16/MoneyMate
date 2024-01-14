@@ -16,5 +16,5 @@ public class TransactionResponse {
   private final String description;
   private final BigDecimal amount;
   private final TransactionType type;
-  private final TransactionCategory category;
+  private final TransactionCategoryResponse category;
 }

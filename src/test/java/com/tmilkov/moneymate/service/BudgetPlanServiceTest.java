@@ -5,6 +5,8 @@ import com.tmilkov.moneymate.model.entity.budget.BudgetPlan;
 import com.tmilkov.moneymate.model.entity.transaction.Transaction;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionType;
+import com.tmilkov.moneymate.model.entity.user.Role;
+import com.tmilkov.moneymate.model.entity.user.User;
 import com.tmilkov.moneymate.model.request.BudgetPlanRequest;
 import com.tmilkov.moneymate.model.response.BudgetPlanResponse;
 import com.tmilkov.moneymate.model.response.BudgetResponse;
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
@@ -45,43 +49,55 @@ public class BudgetPlanServiceTest {
   @InjectMocks
   private BudgetPlanService budgetPlanService;
 
+  private static List<User> mockUsers;
   private static List<TransactionCategory> mockTransactionCategories;
   private static List<Transaction> mockTransactions;
   private static List<BudgetPlan> mockBudgetPlans;
 
   @BeforeAll
   static void before() {
-    mockTransactionCategories = List.of(
-      new TransactionCategory(1L, "Category1", "Category1 description", Set.of()),
-      new TransactionCategory(2L, "Category2", "Category2 description", Set.of()),
-      new TransactionCategory(3L, "Category3", "Category3 description", Set.of())
+    mockUsers = List.of(
+      new User(1L, "User 1", "Name 1", "email 1", "pass 1", Role.USER),
+      new User(2L, "User 2", "Name 2", "email 2", "pass 2", Role.USER),
+      new User(3L, "User 3", "Name 3", "email 3", "pass 3", Role.ADMIN)
     );
+
+    mockTransactionCategories = List.of(
+      new TransactionCategory(1L, mockUsers.get(0), "Category1", "Category1 description", Set.of()),
+      new TransactionCategory(2L, mockUsers.get(0), "Category2", "Category2 description", Set.of()),
+      new TransactionCategory(3L, mockUsers.get(1), "Category3", "Category3 description", Set.of())
+    );
+
     mockTransactions = List.of(
       new Transaction(
         1L,
         new Date(),
         "Transaction1",
-        new BigDecimal(100),
+        new BigDecimal("100.0"),
         TransactionType.INCOME,
-        new TransactionCategory(1L, "Category1", "Category1 description", Set.of())
+        mockTransactionCategories.get(0),
+        mockTransactionCategories.get(0).getUser()
       ),
       new Transaction(
         2L,
         new Date(),
         "Transaction2",
-        new BigDecimal(100),
+        new BigDecimal("100.0"),
         TransactionType.INCOME,
-        new TransactionCategory(2L, "Category1", "Category1 description", Set.of())
+        mockTransactionCategories.get(0),
+        mockTransactionCategories.get(0).getUser()
       ),
       new Transaction(
         3L,
         new Date(),
         "Transaction3",
-        new BigDecimal(20),
-        TransactionType.EXPENSE,
-        new TransactionCategory(3L, "Category1", "Category1 description", Set.of())
+        new BigDecimal("100.0"),
+        TransactionType.INCOME,
+        mockTransactionCategories.get(1),
+        mockTransactionCategories.get(1).getUser()
       )
     );
+
     mockBudgetPlans = List.of(
       new BudgetPlan(
         1L,
@@ -89,7 +105,8 @@ public class BudgetPlanServiceTest {
         new Date(),
         Date.from(new Date().toInstant().plus(2, ChronoUnit.DAYS)),
         new BigDecimal(100),
-        Set.of()
+        Set.of(),
+        mockUsers.get(0)
       ),
       new BudgetPlan(
         2L,
@@ -97,8 +114,17 @@ public class BudgetPlanServiceTest {
         new Date(),
         Date.from(new Date().toInstant().plus(5, ChronoUnit.DAYS)),
         new BigDecimal(120),
-        Set.of()
+        Set.of(),
+        mockUsers.get(0)
       )
+    );
+  }
+
+  private Authentication getAuthenticationForUser(User user) {
+    return new UsernamePasswordAuthenticationToken(
+      user,
+      null,
+      user.getAuthorities()
     );
   }
 
@@ -112,10 +138,15 @@ public class BudgetPlanServiceTest {
       new BigDecimal(20)
     );
 
+    final var mockUser = mockUsers.get(0);
+    final var authentication = getAuthenticationForUser(mockUser);
+
+    when(transactionRepository.findAllByUserId(mockUser.getId())).thenReturn(mockTransactions);
+
     when(transactionRepository.findAll()).thenReturn(mockTransactions);
 
     // when
-    BudgetResponse budget = budgetPlanService.getBudget();
+    BudgetResponse budget = budgetPlanService.getBudgetByUser(authentication);
 
     // then
     assertEquals(expectedBudgetResponse, budget);
@@ -143,6 +174,9 @@ public class BudgetPlanServiceTest {
       )
     );
 
+    final var mockUser = mockUsers.get(0);
+    final var authentication = getAuthenticationForUser(mockUser);
+
     when(budgetPlanMapper.toResponse(any(BudgetPlan.class)))
       .thenAnswer(invocation -> {
         BudgetPlan inputBudgetPlan = invocation.getArgument(0);
@@ -154,7 +188,7 @@ public class BudgetPlanServiceTest {
     when(budgetPlanRepository.findAll()).thenReturn(mockBudgetPlans);
 
     // when
-    List<BudgetPlanResponse> budgetPlans = budgetPlanService.getAllBudgetPlans();
+    List<BudgetPlanResponse> budgetPlans = budgetPlanService.getAllBudgetPlansByUser(authentication);
 
     // then
     assertEquals(expectedBudgetPlansResponses, budgetPlans);
@@ -163,8 +197,20 @@ public class BudgetPlanServiceTest {
   @Test
   public void testAddBudgetPlan() {
     // given
-    final var category1 = new TransactionCategory(1L, "Category1", "Category1 description", Set.of());
-    final var category3 = new TransactionCategory(3L, "Category3", "Category3 description", Set.of());
+    final var category1 = new TransactionCategory(
+      1L,
+      new User(1L, "User 1", "Name 1", "email 1", "pass 1", Role.USER),
+      "Category1",
+      "Category1 description",
+      Set.of()
+    );
+    final var category3 = new TransactionCategory(
+      3L,
+      new User(2L, "User 2", "Name 2", "email 2", "pass 2", Role.USER),
+      "Category3",
+      "Category3 description",
+      Set.of()
+    );
 
     final var request = new BudgetPlanRequest(
       "BudgetPlan1",
@@ -198,23 +244,20 @@ public class BudgetPlanServiceTest {
       )
       .build();
 
-    when(transactionCategoryRepository.findAllById(request.getTransactionCategoryIds()))
+    final var mockUser = mockUsers.get(0);
+    final var authentication = getAuthenticationForUser(mockUser);
+
+    when(transactionCategoryRepository.findAllByIdInAndUserId(request.getTransactionCategoryIds(), mockUser.getId()))
       .thenReturn(List.of(category1, category3));
-    when(budgetPlanMapper.toEntity(request, Set.of(category1, category3))).thenReturn(budgetPlan);
+    when(budgetPlanMapper.toEntity(request, Set.of(category1, category3), mockUser)).thenReturn(budgetPlan);
     when(budgetPlanMapper.toResponse(budgetPlan)).thenReturn(expectedBudgetPlanResponse);
     when(budgetPlanRepository.save(budgetPlan)).thenReturn(budgetPlan);
 
     // when
-    final BudgetPlanResponse budgetPlanResponse = budgetPlanService.addBudgetPlan(request);
+    final BudgetPlanResponse budgetPlanResponse = budgetPlanService.addBudgetPlanForUser(request, authentication);
 
     // then
     assertEquals(expectedBudgetPlanResponse, budgetPlanResponse);
-
-
-//        final var transactionCategories = transactionCategoryRepository.findAllById(request.getTransactionCategoryIds());
-//        final var newBudgetPlan = budgetPlanMapper.toEntity(request, new HashSet<>(transactionCategories));
-//
-//        return budgetPlanMapper.toResponse(budgetPlanRepository.save(newBudgetPlan));
   }
 
 }
