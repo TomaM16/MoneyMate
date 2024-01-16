@@ -55,7 +55,7 @@ public class TransactionsService {
   }
 
   public TransactionResponse addTransactionForUser(TransactionRequest request, Principal connectedUser) throws NoSuchElementException {
-    final var user = ((User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal());
+    final var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
     final TransactionCategory category = getTransactionCategoryByUserId(request.getCategoryId(), user.getId());
     final Transaction newTransaction = transactionMapper.toEntity(request, category, user);

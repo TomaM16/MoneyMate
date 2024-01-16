@@ -32,7 +32,7 @@ public class BudgetPlanService {
   private final BudgetPlanMapper budgetPlanMapper;
 
   public BudgetResponse getBudgetByUser(Principal connectedUser) {
-    final var user = ((User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal());
+    final var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
     final var transactions = transactionRepository.findAllByUserId(user.getId());
     final var balance = transactions.stream()
@@ -65,7 +65,7 @@ public class BudgetPlanService {
   }
 
   public List<BudgetPlanResponse> getAllBudgetPlansByUser(Principal connectedUser) {
-    final var user = ((User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal());
+    final var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
     return budgetPlanRepository.findAllByUserId(user.getId())
       .stream()
@@ -74,7 +74,7 @@ public class BudgetPlanService {
   }
 
   public BudgetPlanResponse addBudgetPlanForUser(BudgetPlanRequest request, Principal connectedUser) {
-    final var user = ((User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal());
+    final var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
     final var transactionCategories = transactionCategoryRepository.findAllByIdInAndUserId(
       request.getTransactionCategoryIds(),

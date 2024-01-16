@@ -1,16 +1,11 @@
 package com.tmilkov.moneymate.config;
 
-import com.tmilkov.moneymate.mapper.AuthenticationMapper;
-import com.tmilkov.moneymate.mapper.UserMapper;
 import com.tmilkov.moneymate.model.entity.user.Role;
-import com.tmilkov.moneymate.model.entity.user.User;
 import com.tmilkov.moneymate.model.request.RegisterRequest;
 import com.tmilkov.moneymate.repository.user.UserRepository;
 import com.tmilkov.moneymate.service.authentication.AuthenticationService;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,7 +24,7 @@ public class AdminUserInitializer implements CommandLineRunner {
   }
 
   @Override
-  public void run(String... args) throws Exception {
+  public void run(String... args) {
     createAdminUserIfNotExists();
   }
 

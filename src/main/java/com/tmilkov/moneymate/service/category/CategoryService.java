@@ -33,7 +33,7 @@ public class CategoryService {
     TransactionCategoryRequest request,
     Principal connectedUser
   ) {
-    final var user = ((User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal());
+    final var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
     final TransactionCategory category = transactionCategoryMapper.toEntity(request, user);
     final var transactionCategory = transactionCategoryRepository.save(category);

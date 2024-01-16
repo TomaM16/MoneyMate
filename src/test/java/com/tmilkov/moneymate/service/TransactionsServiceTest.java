@@ -1,6 +1,5 @@
 package com.tmilkov.moneymate.service;
 
-import com.tmilkov.moneymate.mapper.AuthenticationMapper;
 import com.tmilkov.moneymate.mapper.TransactionMapper;
 import com.tmilkov.moneymate.model.entity.transaction.Transaction;
 import com.tmilkov.moneymate.model.entity.transaction.TransactionCategory;
@@ -21,10 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +29,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 

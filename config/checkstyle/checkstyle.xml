@@ -12,8 +12,6 @@
     <module name="SuppressionFilter">
         <property name="file" value="config/checkstyle/suppressions.xml"/>
     </module>
-    <!--Add more checks from google style guide:-->
-    <!--https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml-->
     <module name="TreeWalker">
         <property name="tabWidth" value="2"/>
         <module name="PackageName">

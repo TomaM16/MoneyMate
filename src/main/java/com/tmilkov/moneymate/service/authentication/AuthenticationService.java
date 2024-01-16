@@ -5,7 +5,6 @@ import com.tmilkov.moneymate.mapper.AuthenticationMapper;
 import com.tmilkov.moneymate.mapper.UserMapper;
 import com.tmilkov.moneymate.model.entity.token.Token;
 import com.tmilkov.moneymate.model.entity.token.TokenType;
-import com.tmilkov.moneymate.model.entity.user.Role;
 import com.tmilkov.moneymate.model.entity.user.User;
 import com.tmilkov.moneymate.model.request.AuthenticationRequest;
 import com.tmilkov.moneymate.model.request.RegisterRequest;
@@ -97,7 +96,7 @@ public class AuthenticationService {
     final String refreshToken;
     final String userEmail;
 
-    if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       return;
     }
 
