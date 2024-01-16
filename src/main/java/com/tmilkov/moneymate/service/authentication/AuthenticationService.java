@@ -37,6 +37,10 @@ public class AuthenticationService {
   private final UserMapper userMapper;
 
   public AuthenticationResponse register(RegisterRequest request) {
+    if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+      throw new IllegalArgumentException("User with this email already exists");
+    }
+
     var user = userMapper.toEntity(request, passwordEncoder.encode(request.getPassword()));
     var savedUser = userRepository.save(user);
     var jwtToken = jwtService.generateToken(user);
