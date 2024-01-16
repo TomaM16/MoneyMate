@@ -64,7 +64,7 @@ public class BudgetPlanServiceTest {
 
     mockTransactionCategories = List.of(
       new TransactionCategory(1L, mockUsers.get(0), "Category1", "Category1 description", Set.of()),
-      new TransactionCategory(2L, mockUsers.get(0), "Category2", "Category2 description", Set.of()),
+      new TransactionCategory(2L, mockUsers.get(1), "Category2", "Category2 description", Set.of()),
       new TransactionCategory(3L, mockUsers.get(1), "Category3", "Category3 description", Set.of())
     );
 
@@ -73,7 +73,7 @@ public class BudgetPlanServiceTest {
         1L,
         new Date(),
         "Transaction1",
-        new BigDecimal("100.0"),
+        new BigDecimal(200),
         TransactionType.INCOME,
         mockTransactionCategories.get(0),
         mockTransactionCategories.get(0).getUser()
@@ -82,8 +82,8 @@ public class BudgetPlanServiceTest {
         2L,
         new Date(),
         "Transaction2",
-        new BigDecimal("100.0"),
-        TransactionType.INCOME,
+        new BigDecimal(20),
+        TransactionType.EXPENSE,
         mockTransactionCategories.get(0),
         mockTransactionCategories.get(0).getUser()
       ),
@@ -91,7 +91,7 @@ public class BudgetPlanServiceTest {
         3L,
         new Date(),
         "Transaction3",
-        new BigDecimal("100.0"),
+        new BigDecimal(100),
         TransactionType.INCOME,
         mockTransactionCategories.get(1),
         mockTransactionCategories.get(1).getUser()
@@ -140,10 +140,13 @@ public class BudgetPlanServiceTest {
 
     final var mockUser = mockUsers.get(0);
     final var authentication = getAuthenticationForUser(mockUser);
+    final var mockUserTransactions = mockTransactions.stream()
+      .filter(transaction -> transaction.getUser().equals(mockUser))
+      .toList();
 
-    when(transactionRepository.findAllByUserId(mockUser.getId())).thenReturn(mockTransactions);
+    System.out.println(mockUserTransactions);
 
-    when(transactionRepository.findAll()).thenReturn(mockTransactions);
+    when(transactionRepository.findAllByUserId(mockUser.getId())).thenReturn(mockUserTransactions);
 
     // when
     BudgetResponse budget = budgetPlanService.getBudgetByUser(authentication);
@@ -176,6 +179,9 @@ public class BudgetPlanServiceTest {
 
     final var mockUser = mockUsers.get(0);
     final var authentication = getAuthenticationForUser(mockUser);
+    final var mockUserBudgetPlans = mockBudgetPlans.stream()
+      .filter(budgetPlan -> budgetPlan.getUser().equals(mockUser))
+      .toList();
 
     when(budgetPlanMapper.toResponse(any(BudgetPlan.class)))
       .thenAnswer(invocation -> {
@@ -185,7 +191,7 @@ public class BudgetPlanServiceTest {
           .findFirst()
           .orElse(null);
       });
-    when(budgetPlanRepository.findAll()).thenReturn(mockBudgetPlans);
+    when(budgetPlanRepository.findAllByUserId(mockUser.getId())).thenReturn(mockUserBudgetPlans);
 
     // when
     List<BudgetPlanResponse> budgetPlans = budgetPlanService.getAllBudgetPlansByUser(authentication);

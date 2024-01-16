@@ -5,11 +5,17 @@ import com.tmilkov.moneymate.model.request.RegisterRequest;
 import com.tmilkov.moneymate.repository.user.UserRepository;
 import com.tmilkov.moneymate.service.authentication.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AdminUserInitializer implements CommandLineRunner {
+
+  @Value("${moneymate.admin.email}")
+  private String adminEmail;
+  @Value("${moneymate.admin.password}")
+  private String adminPassword;
 
   private final UserRepository userRepository;
   private final AuthenticationService authenticationService;
@@ -29,12 +35,12 @@ public class AdminUserInitializer implements CommandLineRunner {
   }
 
   private void createAdminUserIfNotExists() {
-    if (userRepository.findByEmail(Constants.ADMIN_EMAIL).isEmpty()) {
+    if (userRepository.findByEmail(adminEmail).isEmpty()) {
       RegisterRequest adminUserRequest = RegisterRequest.builder()
         .firstName(Constants.ADMIN_FIRSTNAME)
         .lastName(Constants.ADMIN_LASTNAME)
-        .email(Constants.ADMIN_EMAIL)
-        .password(Constants.ADMIN_PASSWORD)
+        .email(adminEmail)
+        .password(adminPassword)
         .role(Role.ADMIN)
         .build();
 
@@ -45,8 +51,6 @@ public class AdminUserInitializer implements CommandLineRunner {
   public interface Constants {
     String ADMIN_FIRSTNAME = "Admin";
     String ADMIN_LASTNAME = "User";
-    String ADMIN_EMAIL = "admin@moneymate.com";
-    String ADMIN_PASSWORD = "admin-tmilkov";
   }
 
 }
