@@ -1,9 +1,20 @@
 package com.tmilkov.moneymate.model.entity.transaction;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.tmilkov.moneymate.model.entity.budget.BudgetPlan;
-import jakarta.persistence.*;
-import lombok.*;
+import com.tmilkov.moneymate.model.entity.user.User;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,26 +27,20 @@ import java.util.Set;
 @Entity
 public class TransactionCategory {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+  @Id
+  @GeneratedValue
+  private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+  @JsonBackReference
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    private String name;
-    private String description;
+  private String name;
+  private String description;
 
-    @JsonBackReference
-    @ManyToMany
-    @JoinTable(name = "TransactionCategory_BudgetPlan",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "plan_id"))
-    private Set<BudgetPlan> budgetPlans = new HashSet<>();
-
-    public void addBudgetPlan(BudgetPlan budgetPlan) {
-        budgetPlans.add(budgetPlan);
-    }
+  @JsonManagedReference
+  @ManyToMany(mappedBy = "transactionCategories")
+  private Set<BudgetPlan> budgetPlans = new HashSet<>();
 
 }

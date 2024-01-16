@@ -18,20 +18,20 @@ import java.util.Date;
 @NoArgsConstructor
 public class TransactionRequest {
 
-    @NotNull(message = "Date is required")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private Date date;
+  @NotNull(message = "Date is required")
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  private Date date;
 
-    @NotBlank(message = "Description is required")
-    private String description;
+  @NotBlank(message = "Description is required")
+  private String description;
 
-    @NotNull(message = "Amount is required")
-    private BigDecimal amount;
+  @NotNull(message = "Amount is required")
+  private BigDecimal amount;
 
-    @NotNull(message = "Type is required")
-    private TransactionType type;
+  @NotNull(message = "Type is required")
+  private TransactionType type;
 
-    @NotNull(message = "Category is required")
-    private Long categoryId;
+  @NotNull(message = "Category is required")
+  private Long categoryId;
 
 }
